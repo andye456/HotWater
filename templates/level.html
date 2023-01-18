@@ -1,0 +1,84 @@
+{% extends 'main.html' %}
+{% block title %}Level{% endblock %}
+{% block content %}
+    {#    Takes the average of all the data points #}
+    <script>
+
+        // set the dimensions and margins of the graph
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 460 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        // Get the data
+        d3.json("/data", function (data) {
+            // format the data
+            console.log(data);
+
+            let sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+                .key(function (d) {
+                    return d.time;
+                })
+                .entries(data);
+            console.log(sumstat)
+
+
+            {#Get the average temp of all the probes for the time period#}
+            let newgroup = new Array();
+            sumstat.forEach(d => {
+                let total_temp = 0
+                d.values.forEach(f => {
+                    if( f.temp > 25) {
+                        total_temp = total_temp + 10
+                    }
+                })
+                newgroup.push({"key": d.key, "avg_temp": total_temp});
+            });
+
+            console.log("newgroup = ")
+            console.log(newgroup)
+
+            // Add X axis --> it is a date format
+            let x = d3.scaleTime()
+                .domain(d3.extent(data, function (d) {
+                    return Date.parse(d.time);
+                }))
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(sumstat.length));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([0, d3.max(data, function (d) {
+                    return +100;
+                })])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Draw the line
+            svg.append("path")
+                .datum(newgroup)
+                .attr("fill", "none")
+                .attr("stroke-width", 1)
+                .style("stroke", "black")
+                .attr("d", d3.line()
+                    .x( (d)=> x(Date.parse(d.key)))
+                    .y( (d) => y(d.avg_temp))
+                )
+
+
+
+        });
+
+    </script>
+{% endblock %}
