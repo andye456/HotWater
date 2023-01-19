@@ -19,7 +19,7 @@ def get_level():
     return render_template('level.html')
 @app.route('/data', methods=['GET'])
 def get_data():
-    data = [
+    data = {'data':[
             {"id":"t1", "time": "2023-01-15T10:50:00.000", "temp": 20.432},
             {"id":"t2", "time": "2023-01-15T10:50:00.000", "temp": 21.672},
             {"id":"t3", "time": "2023-01-15T10:50:00.000", "temp": 25.245},
@@ -52,7 +52,7 @@ def get_data():
             {"id":"t8", "time": "2023-01-15T11:00:00.000", "temp": 74.232},
             {"id":"t9", "time": "2023-01-15T11:00:00.000", "temp": 76.232},
             {"id":"t10","time": "2023-01-15T11:00:00.000", "temp": 75.232}
-    ]
+    ]}
     return data
 
 

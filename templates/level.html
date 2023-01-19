@@ -21,13 +21,13 @@
         // Get the data
         d3.json("/data", function (data) {
             // format the data
-            console.log(data);
+            console.log(data.data);
 
             let sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
                 .key(function (d) {
                     return d.time;
                 })
-                .entries(data);
+                .entries(data.data);
             console.log(sumstat)
 
 
@@ -48,7 +48,7 @@
 
             // Add X axis --> it is a date format
             let x = d3.scaleTime()
-                .domain(d3.extent(data, function (d) {
+                .domain(d3.extent(data.data, function (d) {
                     return Date.parse(d.time);
                 }))
                 .range([0, width]);
@@ -58,7 +58,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([0, d3.max(data, function (d) {
+                .domain([0, d3.max(data.data, function (d) {
                     return +100;
                 })])
                 .range([height, 0]);
