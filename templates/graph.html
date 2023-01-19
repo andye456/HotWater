@@ -26,12 +26,12 @@
                 .key(function (d) {
                     return d.id;
                 })
-                .entries(data);
+                .entries(data.data);
             console.log(sumstat)
 
             // Add X axis --> it is a date format
             let x = d3.scaleTime()
-                .domain(d3.extent(data, function (d) {
+                .domain(d3.extent(data.data, function (d) {
                     return Date.parse(d.time);
                 }))
                 .range([0, width]);
@@ -41,7 +41,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([0, d3.max(data, function (d) {
+                .domain([0, d3.max(data.data, function (d) {
                     return +d.temp;
                 })])
                 .range([height, 0]);
