@@ -32,11 +32,11 @@
 
 
             {#Get the average temp of all the probes for the time period#}
-            let newgroup = new Array();
+            let newgroup = [];
             sumstat.forEach(d => {
                 let total_temp = 0
                 d.values.forEach(f => {
-                    if( f.temp > 25) {
+                    if( f.temp > 50) {
                         total_temp = total_temp + 10
                     }
                 })
