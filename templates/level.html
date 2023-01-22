@@ -5,9 +5,9 @@
     <script>
 
         // set the dimensions and margins of the graph
-        var margin = {top: 10, right: 30, bottom: 30, left: 60},
-            width = 460 - margin.left - margin.right,
-            height = 400 - margin.top - margin.bottom;
+        var margin = {top: 20, right: 30, bottom: 60, left: 60},
+            width = 1500 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
         var svg = d3.select("#my_dataviz")
@@ -31,12 +31,12 @@
             console.log(sumstat)
 
 
-            {#Get the average temp of all the probes for the time period#}
+            {# Add 10% to the total for each probe over 50 #}
             let newgroup = [];
             sumstat.forEach(d => {
                 let total_temp = 0
                 d.values.forEach(f => {
-                    if( f.temp > 50) {
+                    if (f.temp > 50) {
                         total_temp = total_temp + 10
                     }
                 })
@@ -54,14 +54,22 @@
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x).ticks(sumstat.length));
+                .call(d3.axisBottom(x).ticks(sumstat.length / 2).tickFormat(d3.timeFormat('%H:%M:%S')))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "4.7em")
+                .attr("dy", "-0.5em")
+                .attr("transform", "rotate(90)")
+
+            ;
 
             // Add Y axis
             var y = d3.scaleLinear()
                 .domain([0, d3.max(data.data, function (d) {
                     return +100;
                 })])
-                .range([height, 0]);
+                .range([height, 0])
+            ;
             svg.append("g")
                 .call(d3.axisLeft(y));
 
@@ -70,13 +78,12 @@
                 .datum(newgroup)
                 .attr("fill", "none")
                 .attr("stroke-width", 1)
-                .style("stroke", "black")
+                .style("stroke", "steelblue")
                 .attr("d", d3.line()
-                    .x( (d)=> x(Date.parse(d.key)))
-                    .y( (d) => y(d.avg_temp))
+                    .x((d) => x(Date.parse(d.key)))
+                    .y((d) => y(d.avg_temp))
                 )
-
-
+            ;
 
         });
 

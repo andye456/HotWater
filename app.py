@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from pymongo import MongoClient
-import json
+from datetime import date
 
 app = Flask(__name__)
 
@@ -23,19 +23,24 @@ def get_level():
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_data():
-    mongo_client = MongoClient("localhost", 27017)
+    # mongo_client = MongoClient("mongodb://localhost:27017/hotwater")
+    mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
     database = mongo_client.hotwater
     temps = database.temp_data
     temps.insert_one(request.json)
-    return "<h2><a href='graph'>back</a></h2>"
+    return "."
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    mongo_client = MongoClient("mongodb://localhost:27017")
+    # mongo_client = MongoClient("mongodb://localhost:27017/hotwater")
+    mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
     database = mongo_client["hotwater"]
     temps = database["temp_data"]
-    start = "2023-01-10T11:00:00.000"
-    end = "2023-01-16T11:00:00.000"
+
+    today = date.today().strftime("%Y-%m-%d")
+
+    start = f"{today}T00:00:00.000"
+    end = f"{today}T23:59:59.000"
 
     # data = {'data': temps.find_one()['data']}
     d = temps.find({'time':{'$gte': start,'$lt': end}}).sort('time')
