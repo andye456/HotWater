@@ -4,7 +4,7 @@
     <script>
 
         // set the dimensions and margins of the graph
-        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+        var margin = {top: 10, right: 30, bottom: 60, left: 60},
             width = 460 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
@@ -35,9 +35,16 @@
                     return Date.parse(d.time);
                 }))
                 .range([0, width]);
+
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x).ticks(sumstat[0].key.length));
+                .call(d3.axisBottom(x).ticks(sumstat.length / 2).tickFormat(d3.timeFormat('%H:%M:%S')))
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "4.7em")
+                .attr("dy", "-0.5em")
+                .attr("transform", "rotate(90)")
+
 
             // Add Y axis
             var y = d3.scaleLinear()
@@ -77,7 +84,7 @@
                         (d.values)
                 })
                 .text((d) => d.id)
-                ;
+            ;
 
         });
 
