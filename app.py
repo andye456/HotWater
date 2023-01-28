@@ -1,6 +1,8 @@
 from flask import Flask, request, render_template, jsonify
 from pymongo import MongoClient
 from datetime import date
+from datetime import datetime
+import time
 
 app = Flask(__name__)
 
@@ -8,6 +10,11 @@ app = Flask(__name__)
 def hello_world():  # put application's code here
     return render_template('main.html')
 
+@app.route('/get_time')
+def get_time():
+    now = datetime.today().strftime("%Y,%m,%d,%w,%H,%M,%S,0")
+    print(now)
+    return now
 
 @app.route('/graph', methods=['GET', 'POST'])
 def get_graph():
@@ -27,6 +34,7 @@ def add_data():
     mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
     database = mongo_client.hotwater
     temps = database.temp_data
+    print(request.json)
     temps.insert_one(request.json)
     return "."
 
