@@ -5,13 +5,115 @@
     <title>{% block title %}{% endblock %}</title>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-array.v2.min.js"></script>
-    <script>
+    <script
+            src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
+    <script>
+        $(function () {
+            /**
+             * Accepts either a URL or querystring and returns an object associating
+             * each querystring parameter to its value.
+             *
+             * Returns an empty object if no querystring parameters found.
+             */
+            function getUrlParams(urlOrQueryString) {
+                if ((i = urlOrQueryString.indexOf('?')) >= 0) {
+                    const queryString = urlOrQueryString.substring(i + 1);
+                    if (queryString) {
+                        return _mapUrlParams(queryString);
+                    }
+                }
+
+                return {};
+            }
+
+            /**
+             * Helper function for `getUrlParams()`
+             * Builds the querystring parameter to value object map.
+             *
+             * @param queryString {string} - The full querystring, without the leading '?'.
+             */
+            function _mapUrlParams(queryString) {
+                return queryString
+                    .split('&')
+                    .map(function (keyValueString) {
+                        return keyValueString.split('=')
+                    })
+                    .reduce(function (urlParams, [key, value]) {
+                        if (Number.isInteger(parseInt(value)) && parseInt(value) == value) {
+                            urlParams[key] = decodeURIComponent(parseInt(value));
+                        } else {
+                            urlParams[key] = decodeURIComponent(value);
+                        }
+                        return urlParams;
+                    }, {});
+            }
+
+            function getDateTime(d) {
+
+                let date = new Date();
+                let hour = date.getHours();
+                let min = date.getMinutes();
+                let sec = date.getSeconds();
+                let year = date.getFullYear();
+                let month = date.getMonth() + 1;
+                let day = date.getDate();
+                date.setDate(date.getDate() + d)
+                hour = (hour < 10 ? "0" : "") + hour;
+                min = (min < 10 ? "0" : "") + min;
+                sec = (sec < 10 ? "0" : "") + sec;
+                month = (month < 10 ? "0" : "") + month;
+                day = (day < 10 ? "0" : "") + day;
+                // return year + "-" + month + "-" + day + "T" + hour + ":" + min + ":" + sec;
+                return year + "-" + month + "-" + day;
+
+
+            }
+
+            let urlParams = getUrlParams(location.search);
+            if (urlParams.hasOwnProperty('start') && urlParams.hasOwnProperty('end')) {
+                $("#start").val(decodeURIComponent(urlParams.start));
+                $("#end").val(decodeURIComponent(urlParams.end));
+            } else {
+                // Initialise to current day
+                $("#start").val(getDateTime(0) + "T00:00:00");
+                $("#end").val(getDateTime(0) + "T23:59:59");
+            }
+
+            $("#daterange").submit((e) => {
+                $.get("/level?start=" + $("#start").val() + "&end=" + $("#end").val());
+            });
+        });
     </script>
 </head>
 <body>
-<div id="my_dataviz"></div>
-{% block content %}{% endblock %}
+<div class="container-fluid">
+    <div id="my_dataviz"></div>
+    {% block content %}{% endblock %}
+    <a href="/level">Current level</a>
+    <br/>
+    <a href="/graph">Temperature graph</a>
+    <form id="daterange" action="/level" method="get">
+        <div class="form-group col-3">
+            <label for="start">Start Time/Date (YYYY-mm-ddTHH:MM:SS)</label>
+            <input type="text" class="form-control" id="start" name="start" aria-describedby="startHelp"
+                   placeholder="Enter start">
+        </div>
+        <div class="form-group col-3">
+            <label for="end">End Time (YYYY-mm-ddTHH:MM:SS)</label>
+            <input type="text" class="form-control" id="end" name="end" placeholder="Enter end">
+            <br/>
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </div>
+    </form>
+</div>
 
 </body>
 </html>
