@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+{% block title %}Graph{% endblock %}
+{% block content %}
+    <script>
+        $(() => {
+            let t1 = $("<table>").attr('class', 'table-sm table-striped table-dark table-bordered');
+            console.log("welcome to table");
+            $.get("/get_all_data", (d) => {
+                count = 0
+                header_count = 0
+                d.data.forEach((x) => {
+                    let tr = $('<tr>');
+
+                    if (count % 11 == 0) {
+                        let td1 = $('<td>').text(x.time).attr('colspan', '2').css('font-weight', 'bold').attr('id', 'header' + header_count);
+                        tr.append(td1);
+                        header_count++;
+                    } else {
+                        let td2 = $('<td>').text(x.id);
+                        let td3 = $('<td>').text(x.temp);
+                        tr.attr('id', 'row' + header_count + count);
+                        tr.append(td2);
+                        tr.append(td3);
+                    }
+                    t1.append(tr);
+                    $('#my_dataviz').append(t1);
+                    count++;
+
+                });
+            });
+
+
+        });
+
+    </script>
+{% endblock %}

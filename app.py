@@ -28,6 +28,18 @@ def get_time():
 @app.route('/graph', methods=['GET', 'POST'])
 def get_graph():
     name = "Graph Page!"
+    try:
+        daterange=request.args.to_dict()
+        print(request.args.to_dict())
+        global start
+        start=daterange['start']
+        global end
+        end=daterange['end']
+        print(f"start = {start}")
+        print(f"end = {end}")
+    except:
+        pass
+
     return render_template('graph.html')
 
 
@@ -53,7 +65,21 @@ def get_level():
         pass
     return render_template('level.html')
 
+@app.route('/table', methods=['POST', 'GET'])
+def get_table():
+    try:
+        daterange=request.args.to_dict()
+        print(request.args.to_dict())
+        global start
+        start=daterange['start']
+        global end
+        end=daterange['end']
+        print(f"start = {start}")
+        print(f"end = {end}")
+    except:
+        pass
 
+    return render_template('table.html')
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_data():
@@ -79,6 +105,28 @@ def get_data():
     for _d in d:
         for _e in _d['data']:
          data.append(_e)
+    return {'data' : data}
+
+@app.route('/get_all_data', methods=['GET'])
+def get_all_data():
+    mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
+    database = mongo_client["hotwater"]
+    temps = database["temp_data"]
+
+    print(f"Getting data with range: {start} to {end}")
+    d = temps.find({'time':{'$gte': start,'$lt': end}}).sort('time')
+    print(d)
+    inner = {}
+    data = []
+    for _d in d:
+        data.append({'time': _d['time']})
+        print(inner)
+        for _e in _d['data']:
+            print(_e)
+            data.append(_e)
+        # data.append(inner)
+
+    print({'data' : data})
     return {'data' : data}
 
 @app.route('/threshold', methods=['POST', 'GET'])

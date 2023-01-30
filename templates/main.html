@@ -87,9 +87,6 @@
                 $("#end").val(getDateTime(0) + "T23:59:59");
             }
 
-            $("#daterange").submit((e) => {
-                $.get("/level?start=" + $("#start").val() + "&end=" + $("#end").val());
-            });
         });
     </script>
 </head>
@@ -100,7 +97,10 @@
     <a href="/level">Current level</a>
     <br/>
     <a href="/graph">Temperature graph</a>
-    <form id="daterange" action="/level" method="get">
+    <br/>
+    <a href="/table">Table of Data</a>
+    <br />
+    <form id="daterange" method="get">
         <div class="form-group col-3">
             <label for="start">Start Time/Date (YYYY-mm-ddTHH:MM:SS)</label>
             <input type="text" class="form-control" id="start" name="start" aria-describedby="startHelp"
