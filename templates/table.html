@@ -1,36 +1,72 @@
 {% extends 'main.html' %}
 {% block title %}Graph{% endblock %}
 {% block content %}
+    <style>
+        .table-sm td, .table-sm th {
+            padding: 0px;
+        }
+
+
+    </style>
     <script>
         $(() => {
-            let t1 = $("<table>").attr('class', 'table-sm table-striped table-dark table-bordered');
+            let main_table = $("<table>").attr('class', 'table-sm');
             console.log("welcome to table");
+            let main_tr = $('<tr>')
+
             $.get("/get_all_data", (d) => {
                 count = 0
                 header_count = 0
+                var first_col = true
                 d.data.forEach((x) => {
-                    let tr = $('<tr>');
+                    if (count % 11 === 0) {
+                        td1 = $('<td>')
+                        table2 = $("<table>").attr('class', 'table-sm table-striped table-dark table-bordered');
 
-                    if (count % 11 == 0) {
-                        let td1 = $('<td>').text(x.time).attr('colspan', '2').css('font-weight', 'bold').attr('id', 'header' + header_count);
-                        tr.append(td1);
+                        tr2 = $('<tr>').attr('id', 'tr');
+                        if (first_col) {
+                            tr2.append('<td></td>')
+                            first_col = false
+                        }
+                        let td21 = $('<td>').text(x.time.split("T")[1]).attr('colspan', '2').css('padding', '3px').css('font-weight', 'bold').attr('id', 'header' + header_count);
+                        tr2.append(td21)
+                        table2.append(tr2)
+                        td1.append(table2)
+                        main_tr.append(td1) // append <td> to main tr
                         header_count++;
                     } else {
-                        let td2 = $('<td>').text(x.id);
-                        let td3 = $('<td>').text(x.temp);
-                        tr.attr('id', 'row' + header_count + count);
-                        tr.append(td2);
-                        tr.append(td3);
+                        tr2 = $('<tr>').attr('id', 'tr').css('text-align', 'center');
+
+                        if (count < 11) {
+                            let td22 = $('<td>').text(x.id).css('padding', '3px');
+                            tr2.append(td22);
+                        }
+                        // TODO: Make the temp change the color between blue and red
+                        let td23 = $('<td>').text(parseFloat(x.temp).toFixed()).css('padding', '3px').css('background-color','#777788');
+                        tr2.attr('id', 'row' + header_count + count);
+                        tr2.append(td23);
+                        table2.append(tr2)
+                        td1.append(table2)
+                        main_tr.append(td1)
                     }
-                    t1.append(tr);
-                    $('#my_dataviz').append(t1);
+
+
+                    if (count % 11 === 0) {
+                        main_tr.append(table2)
+
+                    }
+
                     count++;
 
                 });
+                main_table.append(main_tr)
+                $('#my_dataviz').append(main_table);
+
             });
 
 
-        });
+        })
+        ;
 
     </script>
 {% endblock %}
