@@ -14,6 +14,16 @@
             console.log("welcome to table");
             let main_tr = $('<tr>')
 
+            function toColor(t, tmin, tmax) {
+                let tres = ((t - tmin) / (tmax - tmin)) * 255;
+                console.log("rgb(" + [tres, 0, 255 - tres].join(",") + ")");
+
+                return "rgb(" + [tres, 0, 255 - tres].join(",") + ")";
+            }
+
+            const t_max = 50
+            const t_min = 20
+
             $.get("/get_all_data", (d) => {
                 count = 0
                 header_count = 0
@@ -24,11 +34,17 @@
                         table2 = $("<table>").attr('class', 'table-sm table-striped table-dark table-bordered');
 
                         tr2 = $('<tr>').attr('id', 'tr');
+                        // This is just to pad the top row so the 1st time is not over the 1st column
                         if (first_col) {
                             tr2.append('<td></td>')
                             first_col = false
                         }
-                        let td21 = $('<td>').text(x.time.split("T")[1]).attr('colspan', '2').css('padding', '3px').css('font-weight', 'bold').attr('id', 'header' + header_count);
+                        let td21 = $('<td>')
+                            .text(x.time.split("T")[1])
+                            .attr('colspan', '2')
+                            .css('padding', '3px')
+                            .css('font-weight', 'bold')
+                            .attr('id', 'header' + header_count);
                         tr2.append(td21)
                         table2.append(tr2)
                         td1.append(table2)
@@ -42,7 +58,10 @@
                             tr2.append(td22);
                         }
                         // TODO: Make the temp change the color between blue and red
-                        let td23 = $('<td>').text(parseFloat(x.temp).toFixed()).css('padding', '3px').css('background-color','#777788');
+                        let td23 = $('<td>')
+                            .text(parseFloat(x.temp).toFixed())
+                            .css('padding', '3px')
+                            .css('background-color', toColor(x.temp, t_min, t_max));
                         tr2.attr('id', 'row' + header_count + count);
                         tr2.append(td23);
                         table2.append(tr2)
