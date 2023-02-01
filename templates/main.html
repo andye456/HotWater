@@ -94,12 +94,14 @@
 <div class="container-fluid">
     <div id="my_dataviz"></div>
     {% block content %}{% endblock %}
-    <a href="/level">Current level</a>
-    <br/>
-    <a href="/graph">Temperature graph</a>
-    <br/>
-    <a href="/table">Table of Data</a>
-    <br />
+    <div style="padding: 0px 0px 10px 14px">
+        <a href="/level">Current level</a>
+        <br/>
+        <a href="/graph">Temperature graph</a>
+        <br/>
+        <a href="/table">Table of Data</a>
+        <br/>
+    </div>
     <form id="daterange" method="get">
         <div class="form-group col-3">
             <label for="start">Start Time/Date (YYYY-mm-ddTHH:MM:SS)</label>

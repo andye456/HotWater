@@ -6,18 +6,26 @@
             padding: 0px;
         }
 
+        #main_div {
+            margin: 4px, 4px;
+            padding: 4px;
+            {#background-color: #08c708;#}
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
 
     </style>
     <script>
         $(() => {
-            let main_table = $("<table>").attr('class', 'table-sm');
+            let main_div = $('<div>').attr('id', 'main_div').text("Table of temperatures").css('font-size', '12x')
+            let main_table = $("<table>").attr('class', 'table-sm').css('margin', '20px');
             console.log("welcome to table");
             let main_tr = $('<tr>')
 
             function toColor(t, tmin, tmax) {
                 let tres = ((t - tmin) / (tmax - tmin)) * 255;
-                console.log("rgb(" + [tres, 0, 255 - tres].join(",") + ")");
-
                 return "rgb(" + [tres, 0, 255 - tres].join(",") + ")";
             }
 
@@ -39,12 +47,19 @@
                             tr2.append('<td></td>')
                             first_col = false
                         }
-                        let td21 = $('<td>')
+                        let td21 = $('<th>')
+                        {#.css('transform', 'rotateZ(-90.0deg)')#}
+                        {#.css('height','75').css('width', '12px');#}
+                        let div21 = $('<div>')
                             .text(x.time.split("T")[1])
                             .attr('colspan', '2')
-                            .css('padding', '3px')
-                            .css('font-weight', 'bold')
+                            .css('padding', '9px 5px 0px 0px')
+                            .css('transform', 'rotate(-90.0deg)')
+                            .css('transform-origin', 'right center')
+                            .css('height', '75')
+                            .css('width', '30px')
                             .attr('id', 'header' + header_count);
+                        td21.append(div21)
                         tr2.append(td21)
                         table2.append(tr2)
                         td1.append(table2)
@@ -79,7 +94,8 @@
 
                 });
                 main_table.append(main_tr)
-                $('#my_dataviz').append(main_table);
+                main_div.append(main_table)
+                $('#my_dataviz').append(main_div);
 
             });
 
