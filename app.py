@@ -93,7 +93,6 @@ def add_data():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    # mongo_client = MongoClient("mongodb://localhost:27017/hotwater")
     mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
     database = mongo_client["hotwater"]
     temps = database["temp_data"]
@@ -106,6 +105,16 @@ def get_data():
         for _e in _d['data']:
          data.append(_e)
     return {'data' : data}
+
+@app.route('/adjust', methods=['POST'])
+def adjust(st, en):
+    # adjusts the start and end time
+    global start
+    start=st
+    global end
+    end = en
+    get_all_data()
+    return ""
 
 @app.route('/get_all_data', methods=['GET'])
 def get_all_data():

@@ -56,24 +56,25 @@
                     }, {});
             }
 
-            function getDateTime(d) {
 
-                let date = new Date();
+            function getDateTime(d) {
+                var date = new Date();
+                console.log("date = " + date)
+                date.setDate(date.getDate() + d)
                 let hour = date.getHours();
                 let min = date.getMinutes();
                 let sec = date.getSeconds();
                 let year = date.getFullYear();
                 let month = date.getMonth() + 1;
                 let day = date.getDate();
-                date.setDate(date.getDate() + d)
                 hour = (hour < 10 ? "0" : "") + hour;
                 min = (min < 10 ? "0" : "") + min;
                 sec = (sec < 10 ? "0" : "") + sec;
                 month = (month < 10 ? "0" : "") + month;
                 day = (day < 10 ? "0" : "") + day;
                 // return year + "-" + month + "-" + day + "T" + hour + ":" + min + ":" + sec;
-                return year + "-" + month + "-" + day;
 
+                return year + "-" + month + "-" + day;
 
             }
 
@@ -81,13 +82,29 @@
             if (urlParams.hasOwnProperty('start') && urlParams.hasOwnProperty('end')) {
                 $("#start").val(decodeURIComponent(urlParams.start));
                 $("#end").val(decodeURIComponent(urlParams.end));
-            } else {
-                // Initialise to current day
-                $("#start").val(getDateTime(0) + "T00:00:00");
-                $("#end").val(getDateTime(0) + "T23:59:59");
             }
 
-        });
+
+                $('#yesterday').click(() => {
+                    // make the time date range 00 -> 23 for yesterday
+                    console.log("yesterday")
+                    let d = getDateTime(-1)
+                    console.log(d)
+                    $("#start").val(d + "T00:00:00");
+                    $("#end").val(d + "T23:59:59");
+                });
+
+                $('#today').click(() => {
+                    // make the time date range 00 -> 23 for yesterday
+                    console.log("today")
+                    let d = getDateTime(0)
+                    console.log(d)
+                    $("#start").val(d + "T00:00:00");
+                    $("#end").val(d + "T23:59:59");
+                });
+            }
+        )
+            ;
     </script>
 </head>
 <body>
@@ -112,6 +129,10 @@
             <label for="end">End Time (YYYY-mm-ddTHH:MM:SS)</label>
             <input type="text" class="form-control" id="end" name="end" placeholder="Enter end">
             <br/>
+            <input type="submit" value="Yesterday" class="btn btn-primary" id="yesterday">
+            <input type="submit" value="Today" class="btn btn-primary" id="today">
+            <br>
+            <br>
             <input type="submit" value="Submit" class="btn btn-primary">
         </div>
     </form>
