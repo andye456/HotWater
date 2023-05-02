@@ -12,7 +12,10 @@ password = "TJWVRCWQ"
 led = machine.Pin("LED", machine.Pin.OUT)
 led.low()
 
-
+# This is the reset timer, sets it to the current time in 
+reset_watchdog = time.ticks_ms()
+# above doesn't seem to work, try using iterations
+iterations = 0
 def blink(num, timep):
     for _ in range(num):
         led.high()
@@ -20,15 +23,22 @@ def blink(num, timep):
         led.low()
         time.sleep(timep)
 
+def get_date():
+    (y, mo, d, _, h, m, s, _) = rtc.datetime()
+    date = f"{y}-{'%02d' % mo}-{'%02d' % d}T{'%02d' % h}:{'%02d' % m}:{'%02d' % s}"
+    return date
 
-# blink(2,2)
-# blink(1,0.05)
-def log(line):
-    f = open("run_data.log", "w+")
-    f.write(f"{line}\n")
-    f.close()
+def log(message):
+    url = "http://18.168.124.146:3000/log"
+    try:
+        data = ujson.dumps({"time": get_date, "message": message})
+        response = urequests.post(url, headers={'content-type': 'application/json'}, data=data)
+    except:
+        blink(2, 2)
+        # print(response.text)
+    response.close()
 
-
+log("Entry point after a reset")
 def connect():
     # Connect to WLAN
     wlan = network.WLAN(network.STA_IF)
@@ -51,7 +61,7 @@ except:
     machine.reset()
 
 # get the current time from the end-point
-url = "http://192.168.1.57:3000/get_time"
+url = "http://18.168.124.146:3000/get_time"
 now = urequests.get(url)
 print("Got time", now.text)
 t = now.text.split(",")
@@ -113,8 +123,8 @@ while True:
     #     blink(7,0.5)
     #     time.sleep(1)
 
-    (y, mo, d, _, h, m, s, _) = rtc.datetime()
-    date = f"{y}-{'%02d' % mo}-{'%02d' % d}T{'%02d' % h}:{'%02d' % m}:{'%02d' % s}"
+    # (y, mo, d, _, h, m, s, _) = rtc.datetime()
+    date = get_date
     #     blink(8,0.5)
     #     time.sleep(1)
 
@@ -131,7 +141,7 @@ while True:
          {'id': 't9', 'time': date, 'temp': temp[8]},
          {'id': 't10', 'time': date, 'temp': temp[9]}]})
     # print(post_data)
-    url = "http://192.168.1.57:3000/add"
+    url = "http://18.168.124.146:3000/add"
     try:
         response = urequests.post(url, headers={'content-type': 'application/json'}, data=post_data)
     #         blink(9,0.5)
@@ -144,12 +154,22 @@ while True:
     # get here if data posted
     #     blink(10,0.5)
     #     time.sleep(1)
-    # Better timing loop that blinks once every n seconds
-    # uses actual elapsed time from start of loop
-    while time.ticks_ms() - sent_time < 300000:
+
+    # pasuses for 300 seconds
+    while time.ticks_diff(time.ticks_ms(), sent_time) < 300000:
         blink(1, 0.01)
         time.sleep(1)
+    
+    log(iterations)
+    if iterations > 144:
+        log("should reset now")
+        machine.reset()
 
+    iterations+=1
+    # If the time elapsed since the program started exceeds 1 hour then reset.
+    #if time.ticks_diff(time.ticks_ms(), reset_watchdog) > 3600000: 
+    #    machine.reset()
+    
 
 
 

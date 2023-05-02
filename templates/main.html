@@ -5,6 +5,8 @@
     <title>{% block title %}{% endblock %}</title>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
     <script
             src="https://code.jquery.com/jquery-3.6.3.min.js"
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
@@ -14,75 +16,16 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-
+    {#    <script src="/js/app_functions.js"></script>#}
+    <script src="{{ url_for('static', filename='app_functions.js') }}"></script>
     <script>
         $(function () {
-            /**
-             * Accepts either a URL or querystring and returns an object associating
-             * each querystring parameter to its value.
-             *
-             * Returns an empty object if no querystring parameters found.
-             */
-            function getUrlParams(urlOrQueryString) {
-                if ((i = urlOrQueryString.indexOf('?')) >= 0) {
-                    const queryString = urlOrQueryString.substring(i + 1);
-                    if (queryString) {
-                        return _mapUrlParams(queryString);
-                    }
+
+                let urlParams = getUrlParams(location.search);
+                if (urlParams.hasOwnProperty('start') && urlParams.hasOwnProperty('end')) {
+                    $("#start").val(decodeURIComponent(urlParams.start));
+                    $("#end").val(decodeURIComponent(urlParams.end));
                 }
-
-                return {};
-            }
-
-            /**
-             * Helper function for `getUrlParams()`
-             * Builds the querystring parameter to value object map.
-             *
-             * @param queryString {string} - The full querystring, without the leading '?'.
-             */
-            function _mapUrlParams(queryString) {
-                return queryString
-                    .split('&')
-                    .map(function (keyValueString) {
-                        return keyValueString.split('=')
-                    })
-                    .reduce(function (urlParams, [key, value]) {
-                        if (Number.isInteger(parseInt(value)) && parseInt(value) == value) {
-                            urlParams[key] = decodeURIComponent(parseInt(value));
-                        } else {
-                            urlParams[key] = decodeURIComponent(value);
-                        }
-                        return urlParams;
-                    }, {});
-            }
-
-
-            function getDateTime(d) {
-                var date = new Date();
-                console.log("date = " + date)
-                date.setDate(date.getDate() + d)
-                let hour = date.getHours();
-                let min = date.getMinutes();
-                let sec = date.getSeconds();
-                let year = date.getFullYear();
-                let month = date.getMonth() + 1;
-                let day = date.getDate();
-                hour = (hour < 10 ? "0" : "") + hour;
-                min = (min < 10 ? "0" : "") + min;
-                sec = (sec < 10 ? "0" : "") + sec;
-                month = (month < 10 ? "0" : "") + month;
-                day = (day < 10 ? "0" : "") + day;
-                // return year + "-" + month + "-" + day + "T" + hour + ":" + min + ":" + sec;
-
-                return year + "-" + month + "-" + day;
-
-            }
-
-            let urlParams = getUrlParams(location.search);
-            if (urlParams.hasOwnProperty('start') && urlParams.hasOwnProperty('end')) {
-                $("#start").val(decodeURIComponent(urlParams.start));
-                $("#end").val(decodeURIComponent(urlParams.end));
-            }
 
 
                 $('#yesterday').click(() => {
@@ -102,22 +45,24 @@
                     $("#start").val(d + "T00:00:00");
                     $("#end").val(d + "T23:59:59");
                 });
+
+                const params = window.location.search
+
+                $('#links').append($('<a>').attr('href', '/level'+params).text("Tank hot water level")).append("<br>");
+                $('#links').append($('<a>').attr('href', '/graph'+params).text("Temp of each probe")).append("<br>");
+                $('#links').append($('<a>').attr('href', '/table'+params).text("Table of tank temp")).append("<br>");
+                $('#links').append($('<a>').attr('href', '/heatmap'+params).text("Tank heatmap")).append("<br>");
             }
         )
-            ;
+        ;
+
     </script>
 </head>
 <body>
 <div class="container-fluid">
     <div id="my_dataviz"></div>
     {% block content %}{% endblock %}
-    <div style="padding: 0px 0px 10px 14px">
-        <a href="/level">Current level</a>
-        <br/>
-        <a href="/graph">Temperature graph</a>
-        <br/>
-        <a href="/table">Table of Data</a>
-        <br/>
+    <div id="links" style="padding: 0px 0px 10px 14px">
     </div>
     <form id="daterange" method="get">
         <div class="form-group col-3">

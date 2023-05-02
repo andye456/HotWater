@@ -81,12 +81,38 @@ def get_table():
 
     return render_template('table.html')
 
+@app.route('/heatmap', methods=['POST', 'GET'])
+def heatmap():
+    try:
+        daterange=request.args.to_dict()
+        print(request.args.to_dict())
+        global start
+        start=daterange['start']
+        global end
+        end=daterange['end']
+        print(f"start = {start}")
+        print(f"end = {end}")
+    except:
+        pass
+
+    return render_template('heatmap.html')
+
 @app.route('/add', methods=['POST', 'GET'])
 def add_data():
     # mongo_client = MongoClient("mongodb://localhost:27017/hotwater")
     mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
     database = mongo_client.hotwater
     temps = database.temp_data
+    print(request.json)
+    temps.insert_one(request.json)
+    return "."
+
+@app.route('/log', methods=['POST', 'GET'])
+def log_data():
+    # mongo_client = MongoClient("mongodb://localhost:27017/hotwater")
+    mongo_client = MongoClient("mongodb://hotuser:password1@localhost:27017/hotwater")
+    database = mongo_client.hotwater
+    temps = database.log_data
     print(request.json)
     temps.insert_one(request.json)
     return "."

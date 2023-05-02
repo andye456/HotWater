@@ -29,7 +29,7 @@
                 return "rgb(" + [tres, 0, 255 - tres].join(",") + ")";
             }
 
-            const t_max = 50
+            const t_max = 70
             const t_min = 20
 
             $.get("/get_all_data", (d) => {
@@ -72,7 +72,6 @@
                             let td22 = $('<td>').text(x.id).css('padding', '3px');
                             tr2.append(td22);
                         }
-                        // TODO: Make the temp change the color between blue and red
                         let td23 = $('<td>')
                             .text(parseFloat(x.temp).toFixed())
                             .css('padding', '3px')
