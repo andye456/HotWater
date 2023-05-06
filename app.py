@@ -25,6 +25,7 @@ def get_time():
     print(now)
     return now
 
+
 @app.route('/graph', methods=['GET', 'POST'])
 def get_graph():
     name = "Graph Page!"
