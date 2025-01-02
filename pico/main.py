@@ -28,17 +28,17 @@ def get_date():
     date = f"{y}-{'%02d' % mo}-{'%02d' % d}T{'%02d' % h}:{'%02d' % m}:{'%02d' % s}"
     return date
 
-def log(message):
-    url = "http://18.168.124.146:3000/log"
-    try:
-        data = ujson.dumps({"time": get_date, "message": message})
-        response = urequests.post(url, headers={'content-type': 'application/json'}, data=data)
-    except:
-        blink(2, 2)
-        # print(response.text)
-    response.close()
+# def log(message):
+#     url = "http://18.168.124.146:3000/log"
+#     try:
+#         data = ujson.dumps({"time": get_date, "message": message})
+#         response = urequests.post(url, headers={'content-type': 'application/json'}, data=data)
+#     except:
+#         blink(2, 2)
+#         # print(response.text)
+#     response.close()
 
-log("Entry point after a reset")
+#log("Entry point after a reset")
 def connect():
     # Connect to WLAN
     wlan = network.WLAN(network.STA_IF)
@@ -47,7 +47,7 @@ def connect():
     while wlan.isconnected() == False:
         blink(1, 0.1)
         time.sleep(1)
-    log(wlan.ifconfig())
+    #log(wlan.ifconfig())
     blink(5, 0.1)
 
 
@@ -85,20 +85,20 @@ for tp in t_pin:
 
 roms = []
 for temp in t:
-    log(temp.scan()[0])
+    #log(temp.scan()[0])
     try:
         roms.append(temp.scan()[0])
     except:
         blink(1, 3)
 
-for r in roms:
-    log(r)
+#for r in roms:
+#    log(r)
 
 print(time.gmtime(1674820741))
 
 while True:
     sent_time = time.ticks_ms()
-    log(sent_time)
+    #log(sent_time)
     #     blink(5,0.5)
     #     time.sleep(1)
     try:
@@ -109,7 +109,7 @@ while True:
             blink(1, 0.025)
     except:
         f.close()
-        log("cannot convert temp")
+        #log("cannot convert temp")
         blink(2, 1)
 
     #     blink(6,0.5)
@@ -118,7 +118,7 @@ while True:
     temp = [None] * 10
     # reads each of the probes and write value to a "t" value
     for x, rom in enumerate(roms):
-        log(rom)
+        #log(rom)
         temp[x] = t[x].read_temp(rom)
     #     blink(7,0.5)
     #     time.sleep(1)
@@ -140,7 +140,7 @@ while True:
          {'id': 't8', 'time': date, 'temp': temp[7]},
          {'id': 't9', 'time': date, 'temp': temp[8]},
          {'id': 't10', 'time': date, 'temp': temp[9]}]})
-    # print(post_data)
+    print(post_data)
     url = "http://18.168.124.146:3000/add"
     try:
         response = urequests.post(url, headers={'content-type': 'application/json'}, data=post_data)
@@ -149,7 +149,7 @@ while True:
 
     except:
         blink(2, 2)
-        # print(response.text)
+        print(response.text)
     response.close()
     # get here if data posted
     #     blink(10,0.5)
@@ -160,9 +160,9 @@ while True:
         blink(1, 0.01)
         time.sleep(1)
     
-    log(iterations)
+    #log(iterations)
     if iterations > 144:
-        log("should reset now")
+        #log("should reset now")
         machine.reset()
 
     iterations+=1
@@ -170,6 +170,7 @@ while True:
     #if time.ticks_diff(time.ticks_ms(), reset_watchdog) > 3600000: 
     #    machine.reset()
     
+
 
 
 
