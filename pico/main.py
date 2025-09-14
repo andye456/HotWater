@@ -7,7 +7,7 @@ import ujson
 This is to be sent to the Pico using Thonny
 """
 ssid = "EE-39NJN7"
-password = "wKbRWdu4WfDTNuLU"
+password = "xxxx" #CHANGE ME
 
 led = machine.Pin("LED", machine.Pin.OUT)
 led.low()
